@@ -37,7 +37,7 @@ COUNTRY_LIST = get_country_list()
 COUNTRY_CODES = [code for code, _ in COUNTRY_LIST]
 COUNTRY_NAMES = {code: name for code, name in COUNTRY_LIST}
 
-# Function to get random values from CSV
+# IMPROVEMENT 4: Improved random data generation with more realistic values
 def get_random_csv_values():
     df = load_csv_data()
     
@@ -109,29 +109,54 @@ def get_random_csv_values():
     
     return random_values
 
-# Fallback random value generator (original function)
+# IMPROVEMENT 4: Better random data generation with more realistic values
 def generate_fallback_random_values():
+    # More realistic company names
+    company_types = ["Technologies", "Solutions", "Industries", "Group", "Holdings", "Investments", "International", "Corporation"]
+    company_prefixes = ["Global", "Advanced", "Elite", "Prime", "Superior", "Next-Gen", "Innovative", "Strategic"]
+    company_core = ["Tech", "Data", "Energy", "Trade", "Construct", "Finance", "Med", "Agri", "Petro", "Eco"]
+    
+    # Generate a more realistic company name
+    company_name = f"{random.choice(company_prefixes)} {random.choice(company_core)} {random.choice(company_types)}"
+    
+    # Ensure financial values are internally consistent
+    share_value = round(random.uniform(10, 100), 2)
+    number_of_shares = random.randint(1000, 10000)
+    value_of_shares = round(share_value * number_of_shares, 2)
+    
+    # Base capital expenditure
+    capital_expenditure = round(random.uniform(500000, 5000000), 2)
+    
+    # Operating expense typically 20-40% of capital expenditure
+    operating_expense = round(capital_expenditure * random.uniform(0.2, 0.4), 2)
+    
+    # Fixed assets typically 40-60% of capital expenditure
+    fixed_assets = round(capital_expenditure * random.uniform(0.4, 0.6), 2)
+    
+    # Total investment = capital + operating + some margin
+    total_investment = round(capital_expenditure + operating_expense + random.uniform(100000, 1000000), 2)
+    
     random_values = {
-        "companyName": f"Company {random.randint(1000, 9999)}",
+        "companyName": company_name,
         "companyOrigin": random.choice(COUNTRY_CODES),
-        "companyCity": random.choice(["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Fujairah"]),
-        "companyStreet": f"Street {random.randint(1, 100)}",
-        "companyBuilding": f"Building {random.choice(['A', 'B', 'C', 'D'])}",
+        "companyCity": random.choice(["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Fujairah", "Kuwait City", "Doha", "Riyadh", "Manama"]),
+        "companyStreet": f"{random.choice(['Sheikh Zayed', 'Al Wasl', 'Jumeirah', 'Al Maktoum', 'Al Fahidi'])} Road",
+        "companyBuilding": f"{random.choice(['Al Fattan', 'Emirates', 'Business Central', 'Dubai Gate', 'Marina Plaza'])} Tower {random.choice(['A', 'B', 'C'])}",
         "companyPostalAddress": f"P.O. Box {random.randint(10000, 99999)}",
-        "companyOutput": f"Manufacturing {random.choice(['Electronics', 'Textiles', 'Food Products', 'Construction Materials'])}",
+        "companyOutput": f"Manufacturing and distribution of {random.choice(['advanced electronic components', 'industrial automation systems', 'renewable energy solutions', 'medical equipment', 'construction materials', 'consumer electronics'])}",
         "cashAmount": round(random.uniform(100000, 1000000), 2),
-        "contributionAmount": round(random.uniform(100000, 2000000), 2),
+        "contributionAmount": round(random.uniform(50000, 500000), 2),
         "totalCapitalAmount": round(random.uniform(500000, 5000000), 2),
-        "capitalExpenditure": round(random.uniform(100000, 1000000), 2),
-        "operatingExpense": round(random.uniform(50000, 500000), 2),
-        "fixedAssets": round(random.uniform(200000, 2000000), 2),
-        "totalInvestmentValue": round(random.uniform(1000000, 10000000), 2),
-        "shareholderCompanyPartnerName": f"Shareholder {random.randint(100, 999)}",
+        "capitalExpenditure": capital_expenditure,
+        "operatingExpense": operating_expense,
+        "fixedAssets": fixed_assets,
+        "totalInvestmentValue": total_investment,
+        "shareholderCompanyPartnerName": f"{random.choice(['Al', 'Bin', 'El', 'Abu'])} {random.choice(['Mohammed', 'Ahmed', 'Saeed', 'Sultan', 'Khalid'])} {random.choice(['Holding', 'Investment', 'Group', 'Partners'])}",
         "shareholderNationality": random.choice(COUNTRY_CODES),
-        "shareValue": round(random.uniform(10, 1000), 2),
-        "valueOfEquityOrShares": round(random.uniform(100000, 1000000), 2),
+        "shareValue": share_value,
+        "valueOfEquityOrShares": value_of_shares,
         "percentageOfEquityOrShares": round(random.uniform(10, 100), 2),
-        "numberOfEquityOrShares": random.randint(100, 10000),
+        "numberOfEquityOrShares": number_of_shares,
         "contributionType": {"cash": True},
         "incentives": random.choice([True, False]),
         "incentiveType": {"exemptionFromIncomeTax": random.choice([True, False])},
@@ -143,7 +168,7 @@ def generate_fallback_random_values():
     }
     return random_values
 
-# Function to make API request
+# IMPROVEMENT 1: Enhanced Error Handling
 def analyze_application(application_data):
     api_url = "https://webapp-kdipa-ai-ajazdff5c3facrf9.switzerlandnorth-01.azurewebsites.net/analyze-application"
     payload = {
@@ -157,17 +182,59 @@ def analyze_application(application_data):
     }
     
     try:
-        # Display a loading spinner
-        with st.spinner("Analyzing application..."):
-            response = requests.post(api_url, json=payload, headers=headers)
+        # IMPROVEMENT 3: Progress feedback during API call
+        with st.status("Analyzing application...") as status:
+            status.update(label="Preparing application data...", state="running", expanded=True)
+            time.sleep(0.5)  # Simulate processing time
+            
+            status.update(label="Connecting to analysis service...", state="running")
+            time.sleep(0.5)  # Simulate connection time
+            
+            status.update(label="Sending data for analysis...", state="running")
+            response = requests.post(api_url, json=payload, headers=headers, timeout=30)
+            
+            status.update(label="Processing results...", state="running")
+            time.sleep(0.5)  # Simulate processing time
 
-        if response.status_code == 200:
-            return response.json()
-        else:
-            st.error(f"Error: {response.status_code} - {response.text}")
-            return None
+            if response.status_code == 200:
+                status.update(label="Analysis complete!", state="complete")
+                return response.json()
+            elif response.status_code == 400:
+                status.update(label="Analysis failed - Invalid data", state="error")
+                st.error(f"Bad Request (400): The server couldn't process your application data. Please check your inputs.")
+                try:
+                    error_details = response.json()
+                    st.error(f"Error details: {error_details.get('detail', 'No details provided')}")
+                except:
+                    st.error(f"Error details: {response.text}")
+                return None
+            elif response.status_code == 401 or response.status_code == 403:
+                status.update(label="Analysis failed - Authentication error", state="error")
+                st.error(f"Authentication Error ({response.status_code}): Not authorized to access the analysis service.")
+                return None
+            elif response.status_code == 404:
+                status.update(label="Analysis failed - Service not found", state="error")
+                st.error("Error 404: The analysis service endpoint could not be found. Please contact support.")
+                return None
+            elif response.status_code >= 500:
+                status.update(label="Analysis failed - Server error", state="error")
+                st.error(f"Server Error ({response.status_code}): The analysis service is experiencing issues. Please try again later.")
+                return None
+            else:
+                status.update(label="Analysis failed", state="error")
+                st.error(f"Unexpected Error: {response.status_code} - {response.text}")
+                return None
+    except requests.exceptions.ConnectionError:
+        st.error("Connection Error: Could not connect to the analysis service. Please check your internet connection and try again.")
+        return None
+    except requests.exceptions.Timeout:
+        st.error("Timeout Error: The request to the analysis service timed out. The service might be experiencing high traffic or issues.")
+        return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request Error: {str(e)}")
+        return None
     except Exception as e:
-        st.error(f"Failed to connect to API: {str(e)}")
+        st.error(f"Unexpected Error: {str(e)}")
         return None
 
 # Function to prepare application data from form input
@@ -196,8 +263,71 @@ def prepare_application_data(form_data):
     
     return application_data
 
+# Function to clear form fields
+def clear_form():
+    if 'random_values' in st.session_state:
+        del st.session_state.random_values
+    
+    # Clear application data and analysis result
+    st.session_state.application_data = None
+    st.session_state.analysis_result = None
+    
+    # Rerun the app to refresh the form
+    st.rerun()
+
+# IMPROVEMENT 2: Form validation
+def validate_form_data(form_data):
+    errors = []
+    
+    # Required fields validation
+    required_fields = ["companyName", "companyOrigin", "shareholderCompanyPartnerName", "shareholderNationality"]
+    for field in required_fields:
+        if not form_data.get(field):
+            errors.append(f"{field.replace('company', 'Company ').replace('shareholder', 'Shareholder ')} is required.")
+    
+    # Financial validation
+    if form_data.get("numberOfEquityOrShares", 0) > 0 and form_data.get("shareValue", 0) > 0:
+        calculated_value = form_data.get("numberOfEquityOrShares", 0) * form_data.get("shareValue", 0)
+        declared_value = form_data.get("valueOfEquityOrShares", 0)
+        
+        # Check if there's a significant discrepancy (more than 5%)
+        if abs(calculated_value - declared_value) / (calculated_value + 0.01) > 0.05:
+            errors.append(f"Share value discrepancy detected: {form_data.get('numberOfEquityOrShares')} shares × {form_data.get('shareValue')} AED per share = {calculated_value} AED, but declared value is {declared_value} AED.")
+    
+    # Percentage validation
+    if form_data.get("percentageOfEquityOrShares", 0) > 100:
+        errors.append("Percentage of equity/shares cannot exceed 100%.")
+    
+    # Investment validation
+    total_investment = form_data.get("totalInvestmentValue", 0)
+    cap_ex = form_data.get("capitalExpenditure", 0)
+    op_ex = form_data.get("operatingExpense", 0)
+    
+    if total_investment > 0 and (cap_ex + op_ex) > 0 and (cap_ex + op_ex) > total_investment * 1.5:
+        errors.append(f"Total investment value ({total_investment} AED) seems inconsistent with capital expenditure ({cap_ex} AED) and operating expenses ({op_ex} AED).")
+    
+    return errors
+
 # Application title and description
 st.title("Investment License Analysis")
+
+# IMPROVEMENT 5: Better user experience with context and instructions
+with st.expander("About this application", expanded=False):
+    st.markdown("""
+    ## Investment License Analysis Tool
+    
+    This application helps evaluate investment license applications for potential approval. 
+    
+    ### How to use:
+    1. Fill out the application form with company and investment details
+    2. Use the "Get Data" button to pre-fill with sample data if needed
+    3. Review all fields for accuracy
+    4. Submit your application for analysis
+    5. View results and recommendations
+    
+    The analysis will evaluate your application based on multiple factors and provide recommendations.
+    """)
+
 st.markdown("Complete the application form below to analyze your investment license application.")
 
 # Initialize session state for application data
@@ -207,16 +337,26 @@ if 'application_data' not in st.session_state:
 if 'analysis_result' not in st.session_state:
     st.session_state.analysis_result = None
 
+if 'form_submitted' not in st.session_state:
+    st.session_state.form_submitted = False
+
 # Create a form with tabs for organization
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Company Details", "Financial Details", "Shareholder Information", "Submission", "Debug"])
 
 # Create form for user input
-with st.form("application_form"):
-    # Random values generator button
-    random_button = st.form_submit_button("🎲 Get Random Data from CSV", type="secondary")
+with st.form("application_form", clear_on_submit=False):
+    # Random values generator and Clear Form buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        random_button = st.form_submit_button("Get Data", type="secondary")
+    with col2:
+        clear_button = st.form_submit_button("Clear Form", type="secondary")
     
     if random_button:
         st.session_state.random_values = get_random_csv_values()
+    
+    if clear_button:
+        clear_form()
     
     # Initialize random values if not in session state
     if 'random_values' not in st.session_state:
@@ -229,65 +369,122 @@ with st.form("application_form"):
     # Tab 1: Company Details
     with tab1:
         st.header("Company Details")
+        
+        # IMPROVEMENT 5: Adding tooltips and better field organization
         col1, col2 = st.columns(2)
         
         with col1:
-            company_name = st.text_input("Company Name", value=get_random_value("companyName"))
+            company_name = st.text_input(
+                "Company Name", 
+                value=get_random_value("companyName"),
+                help="Enter the legal name of the company applying for the license"
+            )
+            
             company_origin = st.selectbox(
                 "Country of Origin", 
                 options=[code for code, _ in COUNTRY_LIST],
                 format_func=lambda x: COUNTRY_NAMES.get(x, x),
-                index=COUNTRY_CODES.index(get_random_value("companyOrigin")) if get_random_value("companyOrigin") in COUNTRY_CODES else 0
+                index=COUNTRY_CODES.index(get_random_value("companyOrigin")) if get_random_value("companyOrigin") in COUNTRY_CODES else 0,
+                help="Select the country where the company is legally registered"
             )
-            company_city = st.text_input("City", value=get_random_value("companyCity"))
-            company_street = st.text_input("Street Address", value=get_random_value("companyStreet"))
+            
+            company_city = st.text_input(
+                "City", 
+                value=get_random_value("companyCity"),
+                help="City where the company headquarters is located"
+            )
+            
+            company_street = st.text_input(
+                "Street Address", 
+                value=get_random_value("companyStreet"),
+                help="Main street address of the company"
+            )
         
         with col2:
-            company_building = st.text_input("Building Name", value=get_random_value("companyBuilding"))
-            company_postal = st.text_input("Postal Address", value=get_random_value("companyPostalAddress"))
-            company_output = st.text_area("Company Output (Description)", value=get_random_value("companyOutput"))
+            company_building = st.text_input(
+                "Building Name", 
+                value=get_random_value("companyBuilding"),
+                help="Building name or number"
+            )
+            
+            company_postal = st.text_input(
+                "Postal Address", 
+                value=get_random_value("companyPostalAddress"),
+                help="P.O. Box or postal code for correspondence"
+            )
+            
+            company_output = st.text_area(
+                "Company Output (Description)", 
+                value=get_random_value("companyOutput"),
+                help="Describe the main products or services the company provides"
+            )
     
     # Tab 2: Financial Details
     with tab2:
         st.header("Financial Details")
+        
+        # IMPROVEMENT 5: Adding descriptions for financial terms
+        st.info("All financial values should be entered in AED (United Arab Emirates Dirham)")
+        
         col1, col2 = st.columns(2)
         
         with col1:
-            cash_amount = st.number_input("Cash Amount (AED)", 
-                                          min_value=0.0, 
-                                          value=float(get_random_value("cashAmount", 0.0)),
-                                          format="%.2f")
+            cash_amount = st.number_input(
+                "Cash Amount (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("cashAmount", 0.0)),
+                format="%.2f",
+                help="Liquid cash available for investment"
+            )
             
-            contribution_amount = st.number_input("Contribution Amount (AED)", 
-                                                min_value=0.0, 
-                                                value=float(get_random_value("contributionAmount", 0.0)),
-                                                format="%.2f")
+            contribution_amount = st.number_input(
+                "Contribution Amount (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("contributionAmount", 0.0)),
+                format="%.2f",
+                help="Total amount being contributed to the investment"
+            )
             
-            total_capital_amount = st.number_input("Total Capital Amount (AED)", 
-                                                 min_value=0.0, 
-                                                 value=float(get_random_value("totalCapitalAmount", 0.0)),
-                                                 format="%.2f")
+            total_capital_amount = st.number_input(
+                "Total Capital Amount (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("totalCapitalAmount", 0.0)),
+                format="%.2f",
+                help="Total capital of the company"
+            )
             
-            capital_expenditure = st.number_input("Capital Expenditure (AED)", 
-                                                min_value=0.0, 
-                                                value=float(get_random_value("capitalExpenditure", 0.0)),
-                                                format="%.2f")
+            capital_expenditure = st.number_input(
+                "Capital Expenditure (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("capitalExpenditure", 0.0)),
+                format="%.2f",
+                help="Funds used to acquire or upgrade physical assets (property, equipment, etc.)"
+            )
         
         with col2:
-            operating_expense = st.number_input("Operating Expense (AED)", 
-                                              min_value=0.0, 
-                                              value=float(get_random_value("operatingExpense", 0.0)),
-                                              format="%.2f")
+            operating_expense = st.number_input(
+                "Operating Expense (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("operatingExpense", 0.0)),
+                format="%.2f",
+                help="Ongoing costs for running the business (rent, salaries, utilities, etc.)"
+            )
             
-            fixed_assets = st.number_input("Fixed Assets (AED)", 
-                                         min_value=0.0, 
-                                         value=float(get_random_value("fixedAssets", 0.0)),
-                                         format="%.2f")
+            fixed_assets = st.number_input(
+                "Fixed Assets (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("fixedAssets", 0.0)),
+                format="%.2f",
+                help="Long-term tangible assets (property, equipment, vehicles, etc.)"
+            )
             
-            total_investment_value = st.number_input("Total Investment Value (AED)", 
-                                                   min_value=0.0, 
-                                                   value=float(get_random_value("totalInvestmentValue", 0.0)),
-                                                   format="%.2f")
+            total_investment_value = st.number_input(
+                "Total Investment Value (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("totalInvestmentValue", 0.0)),
+                format="%.2f",
+                help="Total value of the investment being proposed"
+            )
     
     # Tab 3: Shareholder Information
     with tab3:
@@ -295,42 +492,61 @@ with st.form("application_form"):
         col1, col2 = st.columns(2)
         
         with col1:
-            shareholder_name = st.text_input("Shareholder/Company Partner Name", 
-                                           value=get_random_value("shareholderCompanyPartnerName"))
+            shareholder_name = st.text_input(
+                "Shareholder/Company Partner Name", 
+                value=get_random_value("shareholderCompanyPartnerName"),
+                help="Name of the primary shareholder or partner company"
+            )
             
             shareholder_nationality = st.selectbox(
                 "Nationality", 
                 options=[code for code, _ in COUNTRY_LIST],
                 format_func=lambda x: COUNTRY_NAMES.get(x, x),
-                index=COUNTRY_CODES.index(get_random_value("shareholderNationality")) if get_random_value("shareholderNationality") in COUNTRY_CODES else 0
+                index=COUNTRY_CODES.index(get_random_value("shareholderNationality")) if get_random_value("shareholderNationality") in COUNTRY_CODES else 0,
+                help="Country of nationality for the shareholder (individual) or registration (company)"
             )
             
-            share_value = st.number_input("Share Value per Unit (AED)", 
-                                        min_value=0.0, 
-                                        value=float(get_random_value("shareValue", 0.0)),
-                                        format="%.2f")
+            share_value = st.number_input(
+                "Share Value per Unit (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("shareValue", 0.0)),
+                format="%.2f",
+                help="Value of each individual share"
+            )
             
-            value_of_shares = st.number_input("Total Value of Equity/Shares (AED)", 
-                                            min_value=0.0, 
-                                            value=float(get_random_value("valueOfEquityOrShares", 0.0)),
-                                            format="%.2f")
+            value_of_shares = st.number_input(
+                "Total Value of Equity/Shares (AED)", 
+                min_value=0.0, 
+                value=float(get_random_value("valueOfEquityOrShares", 0.0)),
+                format="%.2f",
+                help="Total value of all shares (should approximately equal share value × number of shares)"
+            )
         
         with col2:
-            percentage_of_shares = st.number_input("Percentage of Equity/Shares (%)", 
-                                                 min_value=0.0, 
-                                                 max_value=100.0, 
-                                                 value=float(get_random_value("percentageOfEquityOrShares", 0.0)),
-                                                 format="%.2f")
+            percentage_of_shares = st.number_input(
+                "Percentage of Equity/Shares (%)", 
+                min_value=0.0, 
+                max_value=100.0, 
+                value=float(get_random_value("percentageOfEquityOrShares", 0.0)),
+                format="%.2f",
+                help="Percentage of total company shares owned by this shareholder"
+            )
             
-            number_of_shares = st.number_input("Number of Shares", 
-                                             min_value=0, 
-                                             value=int(float(get_random_value("numberOfEquityOrShares", 0))),
-                                             step=1)
+            number_of_shares = st.number_input(
+                "Number of Shares", 
+                min_value=0, 
+                value=int(float(get_random_value("numberOfEquityOrShares", 0))),
+                step=1,
+                help="Total number of shares owned by this shareholder"
+            )
             
             st.subheader("Contribution Type")
-            cash_contribution = st.checkbox("Cash Contribution", 
-                                          value=get_random_value("contributionType", {}).get("cash", False))
-    
+            cash_contribution = st.checkbox(
+                "Cash Contribution", 
+                value=get_random_value("contributionType", {}).get("cash", False),
+                help="Check if the contribution is in cash form"
+            )
+
     # Tab 4: Incentives and Legal
     with tab4:
         st.header("Incentives")
@@ -364,7 +580,7 @@ with st.form("application_form"):
             st.text_input("License Type", value="ApplicationInvestmentLicenseA", disabled=True)
     
     # Submit button
-    submit_button = st.form_submit_button("Submit Application for Analysis")
+    submit_button = st.form_submit_button("Submit Application")
 
 # Tab 5: Debug tab (outside the form)
 with tab5:
@@ -575,3 +791,5 @@ if submit_button:
                     st.success(risks_str)
                 else:
                     st.warning(risks_str)
+
+    
