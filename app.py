@@ -170,7 +170,7 @@ def generate_fallback_random_values():
 
 # IMPROVEMENT 1: Enhanced Error Handling
 def analyze_application(application_data):
-    api_url = "http://webapp-kdipa-ai-ajazdff5c3facrf9.switzerlandnorth-01.azurewebsites.net/analyze-application"
+    api_url = "https://webapp-kdipa-ai-ajazdff5c3facrf9.switzerlandnorth-01.azurewebsites.net/analyze-application"
     payload = {
         "application_data": application_data,
         "filter_expr": None,
