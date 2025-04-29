@@ -170,7 +170,7 @@ def generate_fallback_random_values():
 
 # IMPROVEMENT 1: Enhanced Error Handling
 def analyze_application(application_data):
-    api_url = "https://webapp-kdipa-ai-ajazdff5c3facrf9.switzerlandnorth-01.azurewebsites.net/analyze-application"
+    api_url = "http://webapp-kdipa-ai-ajazdff5c3facrf9.switzerlandnorth-01.azurewebsites.net/analyze-application"
     payload = {
         "application_data": application_data,
         "filter_expr": None,
@@ -292,7 +292,7 @@ def validate_form_data(form_data):
         
         # Check if there's a significant discrepancy (more than 5%)
         if abs(calculated_value - declared_value) / (calculated_value + 0.01) > 0.05:
-            errors.append(f"Share value discrepancy detected: {form_data.get('numberOfEquityOrShares')} shares × {form_data.get('shareValue')} per share = {calculated_value}, but declared value is {declared_value}.")
+            errors.append(f"Share value discrepancy detected: {form_data.get('numberOfEquityOrShares')} shares × {form_data.get('shareValue')} KWD per share = {calculated_value} KWD, but declared value is {declared_value} KWD.")
     
     # Percentage validation
     if form_data.get("percentageOfEquityOrShares", 0) > 100:
@@ -304,7 +304,7 @@ def validate_form_data(form_data):
     op_ex = form_data.get("operatingExpense", 0)
     
     if total_investment > 0 and (cap_ex + op_ex) > 0 and (cap_ex + op_ex) > total_investment * 1.5:
-        errors.append(f"Total investment value ({total_investment}) seems inconsistent with capital expenditure ({cap_ex}) and operating expenses ({op_ex}).")
+        errors.append(f"Total investment value ({total_investment} KWD) seems inconsistent with capital expenditure ({cap_ex} KWD) and operating expenses ({op_ex} KWD).")
     
     return errors
 
@@ -424,13 +424,13 @@ with st.form("application_form", clear_on_submit=False):
         st.header("Financial Details")
         
         # IMPROVEMENT 5: Adding descriptions for financial terms
-        # st.info("All financial values should be entered in AED (United Arab Emirates Dirham)")
+        st.info("All financial values should be entered in KWD (Kuwaiti Dinar)")
         
         col1, col2 = st.columns(2)
         
         with col1:
             cash_amount = st.number_input(
-                "Cash Amount", 
+                "Cash Amount (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("cashAmount", 0.0)),
                 format="%.2f",
@@ -438,7 +438,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             contribution_amount = st.number_input(
-                "Contribution Amount", 
+                "Contribution Amount (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("contributionAmount", 0.0)),
                 format="%.2f",
@@ -446,7 +446,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             total_capital_amount = st.number_input(
-                "Total Capital Amount", 
+                "Total Capital Amount (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("totalCapitalAmount", 0.0)),
                 format="%.2f",
@@ -454,7 +454,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             capital_expenditure = st.number_input(
-                "Capital Expenditure", 
+                "Capital Expenditure (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("capitalExpenditure", 0.0)),
                 format="%.2f",
@@ -463,7 +463,7 @@ with st.form("application_form", clear_on_submit=False):
         
         with col2:
             operating_expense = st.number_input(
-                "Operating Expense", 
+                "Operating Expense (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("operatingExpense", 0.0)),
                 format="%.2f",
@@ -471,7 +471,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             fixed_assets = st.number_input(
-                "Fixed Assets", 
+                "Fixed Assets (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("fixedAssets", 0.0)),
                 format="%.2f",
@@ -479,7 +479,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             total_investment_value = st.number_input(
-                "Total Investment Value", 
+                "Total Investment Value (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("totalInvestmentValue", 0.0)),
                 format="%.2f",
@@ -507,7 +507,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             share_value = st.number_input(
-                "Share Value per Unit", 
+                "Share Value per Unit (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("shareValue", 0.0)),
                 format="%.2f",
@@ -515,7 +515,7 @@ with st.form("application_form", clear_on_submit=False):
             )
             
             value_of_shares = st.number_input(
-                "Total Value of Equity/Shares", 
+                "Total Value of Equity/Shares (KWD)", 
                 min_value=0.0, 
                 value=float(get_random_value("valueOfEquityOrShares", 0.0)),
                 format="%.2f",
